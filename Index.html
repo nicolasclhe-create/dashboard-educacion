@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, initial-scale=1" />
+<title>MEN · Permanencia y Cobertura Escolar en Colombia 2011–2024</title>
+
+<!-- Tipografía editorial: Spectral (display serif) + IBM Plex Sans/Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Recurso cargado por JS (no detectado automáticamente por el bundler) -->
+<meta name="ext-resource-dependency" content="https://gist.githubusercontent.com/john-guerra/43c7656821069d00dcbc/raw/be6a6e239cd5b5b803c6e7c2ec405b793a9064dd/Colombia.geo.json" data-resource-id="colombiaGeo" />
+
+<style>
+/* ============================================================
+ *  Estilo editorial / institucional. Papel cálido + tinta azul.
+ * ============================================================ */
+:root {
+  --ink:     #10212e;
+  --paper:   #f4f1ea;
+  --panel:   #fbfaf6;
+  --panel-w: #ffffff;
+  --azul:    #1b6ca8;
+  --azulD:   #0f4c75;
+  --teal:    #2a9d8f;
+  --ok:      #2e8b57;
+  --alerta:  #e0a83d;
+  --critico: #c1453b;
+  --grid:    #dcd6c8;
+  --grid-soft:#ebe6d8;
+  --sub:     #5b6b78;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 22px 28px 40px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+/* --------- HEADER --------- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 18px;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 2.2px;
+  color: var(--azulD);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.h1 {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.12;
+  margin: 6px 0 8px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--sub);
+  max-width: 760px;
+  line-height: 1.6;
+}
+.audience {
+  color: var(--azulD);
+  font-weight: 600;
+}
+.header-right {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+}
+
+/* --------- CONTROLES --------- */
+.ctrl {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ctrl-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.ctrl-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slider {
+  width: 170px;
+  accent-color: var(--azulD);
+}
+.anio-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--azulD);
+  min-width: 40px;
+  background: var(--panel);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--grid);
+}
+.select {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel-w);
+  color: var(--ink);
+  cursor: pointer;
+  min-width: 130px;
+}
+.select:focus { outline: 2px solid var(--azul); outline-offset: 1px; }
+
+/* --------- TABS --------- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 20px;
+  align-items: center;
+}
+.tab {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border: 1px solid var(--grid);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--sub);
+  cursor: pointer;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tab:hover { background: var(--panel-w); color: var(--ink); }
+.tab-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  opacity: 0.65;
+}
+.tab-active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.tab-active .tab-num { color: var(--alerta); opacity: 1; }
+
+.chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--azul);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.3px;
+}
+.chip-x { font-size: 13px; opacity: 0.8; }
+.chip:hover { background: var(--azulD); }
+
+/* --------- KPI ROW --------- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.kpi {
+  position: relative;
+  background: var(--panel-w);
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 16px 18px 14px 22px;
+  overflow: hidden;
+  transition: transform .15s, box-shadow .15s;
+}
+.kpi:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16,33,46,.08);
+}
+.kpi-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+}
+.kpi-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sub);
+  font-weight: 500;
+}
+.kpi-val {
+  font-family: 'Spectral', serif;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 8px 0 4px;
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+.kpi-unit {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--sub);
+  margin-left: 3px;
+}
+.kpi-delta {
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.kpi-hint {
+  font-size: 11px;
+  color: var(--sub);
+  margin-top: 5px;
+  line-height: 1.3;
+}
+
+/* --------- PANEL --------- */
+.panel {
+  background: var(--panel-w);
+  border: 1px solid var(--grid);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 10px rgba(16,33,46,.04);
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.panel-kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  color: var(--azul);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.panel-title {
+  font-family: 'Spectral', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 3px;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+.panel-note {
+  font-size: 12.5px;
+  color: var(--sub);
+  margin: 0;
+  line-height: 1.45;
+  max-width: 1080px;
+  text-wrap: pretty;
+}
+.note-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 1080px;
+}
+.note-list li {
+  font-size: 12.5px;
+  color: var(--sub);
+  line-height: 1.45;
+  padding-left: 2px;
+}
+.note-list b { color: var(--ink); font-weight: 600; }
+.note-band, .note-amber, .note-dash {
+  display: inline-block;
+  width: 22px;
+  height: 11px;
+  vertical-align: -1px;
+  border-radius: 2px;
+  margin-right: 2px;
+}
+.note-band { background: rgba(16,33,46,.10); border: 1px solid rgba(16,33,46,.18); }
+.note-amber { background: rgba(224,168,61,.16); border: 1px solid var(--alerta); }
+.note-dash {
+  height: 0; width: 22px; border: 0;
+  border-top: 2px dashed var(--azulD);
+  border-radius: 0; vertical-align: 3px;
+}
+.panel-right {
+  flex-shrink: 0;
+}
+
+/* --------- INSIGHT --------- */
+.insight {
+  background: var(--panel-w);
+  border-left: 4px solid var(--azul);
+  border-radius: 0 8px 8px 0;
+  padding: 13px 18px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 18px;
+  border-top: 1px solid var(--grid);
+  border-right: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
+}
+
+/* --------- MAPA --------- */
+.map-row {
+  display: grid;
+  grid-template-columns: minmax(380px, 1fr) minmax(340px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+@media (max-width: 980px) {
+  .map-row { grid-template-columns: 1fr; }
+}
+.map-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.map-wrap {
+  position: relative;
+  background: var(--paper);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--grid);
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.map-svg path:hover {
+  filter: brightness(1.08);
+  stroke: var(--ink) !important;
+  stroke-width: 1.2 !important;
+}
+.map-label-name {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.map-label-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--azulD);
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.map-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--panel-w);
+  border: 1px solid var(--grid);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  box-shadow: 0 6px 18px rgba(16,33,46,.18);
+  min-width: 140px;
+  transform: translateY(-100%);
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+.map-tooltip-dep {
+  font-weight: 700;
+  color: var(--ink);
+}
+.map-tooltip-val {
+  color: var(--azulD);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.map-legend {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--grid);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 10.5px;
+  backdrop-filter: blur(4px);
+}
+.map-legend-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-size: 9.5px;
+  margin-bottom: 5px;
+}
+.map-legend-stops {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.map-legend-stop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--ink);
+}
+.swatch {
+  width: 14px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.map-hint {
+  font-size: 11.5px;
+  color: var(--sub);
+  padding: 0 4px;
+  font-style: italic;
+}
+.map-loading, .map-error {
+  background: var(--paper);
+  border: 1px dashed var(--grid);
+  border-radius: 8px;
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--sub);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: 400px;
+  justify-content: center;
+}
+.map-error-title {
+  font-family: 'Spectral', serif;
+  font-size: 17px;
+  color: var(--critico);
+  font-weight: 600;
+}
+.map-error-body {
+  max-width: 380px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--grid);
+  border-top-color: var(--azul);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------- RANKING --------- */
+.rank-col {
+  background: var(--paper);
+  border-radius: 8px;
+  border: 1px solid var(--grid);
+  padding: 10px 8px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  max-height: 640px;
+}
+.rank-header {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid var(--grid);
+  margin-bottom: 6px;
+}
+
+/* --------- EFICIENCIA --------- */
+.ef-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 820px) {
+  .ef-grid { grid-template-columns: 1fr; }
+}
+.micro-h {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* --------- VACÍO --------- */
+.empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--sub);
+  font-size: 13px;
+  background: var(--paper);
+  border-radius: 8px;
+  font-style: italic;
+}
+
+/* --------- ESTRATEGIA / FOCALIZACIÓN --------- */
+.strat-q {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 10px;
+  padding: 18px 22px;
+  font-family: 'Spectral', serif;
+  font-size: 19px;
+  line-height: 1.4;
+  margin-bottom: 18px;
+}
+.strat-q b { color: var(--alerta); font-weight: 600; }
+.strat-q-kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #9fb8c9;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.prio-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .prio-row { grid-template-columns: 1fr; }
+}
+.prio-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prio-chart-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.prio-cards-h {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.prio-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--paper);
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+}
+.prio-card:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(16,33,46,.08);
+}
+.prio-rank {
+  font-family: 'Spectral', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--critico);
+  min-width: 26px;
+  text-align: center;
+  line-height: 1;
+}
+.prio-dep {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+}
+.prio-meta {
+  font-size: 11.5px;
+  color: var(--sub);
+  margin-top: 2px;
+}
+.prio-meta b { color: var(--ink); }
+
+/* --------- SEMÁFORO LEGEND --------- */
+.semaforo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grid-soft);
+  font-size: 12px;
+  color: var(--ink);
+}
+.semaforo-titulo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  color: var(--sub);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.semaforo-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.semaforo-sw {
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.12);
+  display: inline-block;
+}
+
+/* --------- FOOTER --------- */
+.footer {
+  border-top: 1px solid var(--grid);
+  padding-top: 16px;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--sub);
+  line-height: 1.65;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.footer b { color: var(--ink); font-weight: 600; }
+
+/* --------- FADE IN --------- */
+.fade {
+  animation: fadeIn .4s cubic-bezier(.2,.6,.2,1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Recharts overrides — fuente uniforme */
+.recharts-wrapper text {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script>
+  // Silenciar el ruido de Recharts 2.x bajo React 18:
+  // "defaultProps will be removed from function components". No es accionable
+  // (es interno de Recharts) y satura la consola en revisiones de QA.
+  (function() {
+    var _err = console.error;
+    console.error = function() {
+      var s = arguments[0];
+      if (typeof s === 'string' && s.indexOf('defaultProps will be removed') !== -1) return;
+      return _err.apply(console, arguments);
+    };
+  })();
+</script>
+
+<!-- React 18 + ReactDOM + Babel (versiones pinneadas, integrity verificada) -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- Recharts (depende de prop-types) -->
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+
+<!-- DATA: 462 registros embebidos (ETL en Python sobre fuente MEN) -->
+<script src="data.js"></script>
+
+<!-- Componentes -->
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="map.jsx"></script>
+<script type="text/babel" src="dashboard.jsx"></script>
+
+<!-- Thumbnail para el empaquetado offline (splash + fallback no-JS) -->
+<template id="__bundler_thumbnail" data-bg-color="#f4f1ea">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#f4f1ea"/>
+    <g transform="translate(420,140)" fill="#1b6ca8" opacity="0.92">
+      <path d="M180 30 L240 70 L280 60 L300 100 L260 140 L290 180 L260 230 L300 280 L280 340 L240 380 L260 430 L220 480 L180 470 L140 510 L100 480 L80 430 L40 410 L20 360 L60 320 L40 270 L80 230 L60 180 L100 150 L80 110 L120 80 L160 90 Z"/>
+    </g>
+    <g font-family="Spectral, Georgia, serif" fill="#10212e" text-anchor="middle">
+      <text x="600" y="640" font-size="46" font-weight="700">Educación · Colombia 2011–2024</text>
+    </g>
+    <g font-family="IBM Plex Mono, monospace" fill="#5b6b78" text-anchor="middle">
+      <text x="600" y="685" font-size="18" letter-spacing="3">MEN · PANEL TERRITORIAL</text>
+    </g>
+    <line x1="200" y1="730" x2="1000" y2="730" stroke="#10212e" stroke-width="2"/>
+  </svg>
+</template>
+
+</body>
+</html>
